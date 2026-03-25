@@ -1,0 +1,79 @@
+# Объект Артиста
+type Artist {
+    id: ID!
+    firstName: String
+    lastName: String
+    fullName: String
+    email: String
+    nickname: String
+    telegramUserId: String
+}
+
+type Release {
+    id: ID!
+    title: String
+    upc: String
+    genre: String
+    createdAt: String
+    artist: Artist
+}
+
+# Объект для пагинации релизов
+type ReleasePage {
+    content: [Release]
+    pageNumber: Int
+    pageSize: Int
+    totalElements: Int
+    totalPages: Int
+    last: Boolean
+}
+
+type Query {
+    # Получение списка всех артистов
+    artists: [Artist]
+    # Поиск артиста по внутреннему ID
+    artistById(id: ID!): Artist
+    # Поиск артиста по его Telegram ID
+    artistByTelegramId(telegramUserId: String!): Artist
+
+    # Список релизов с фильтрацией по артисту и пагинацией
+    releases(artistId: ID, genre: String, page: Int = 0, size: Int = 10): ReleasePage
+    # Получение конкретного релиза
+    releaseById(id: ID!): Release
+}
+
+# Входные данные для создания/обновления артиста (ArtistRequest)
+input ArtistInput {
+    firstName: String!
+    lastName: String!
+    email: String
+    nickname: String
+    telegramUserId: String
+}
+
+# Входные данные для создания релиза (ReleaseRequest)
+input ReleaseInput {
+    title: String!
+    upc: String!
+    genre: String
+    artistId: ID!
+}
+
+# Входные данные для частичного обновления (Patch)
+input PatchReleaseInput {
+    title: String
+    upc: String
+    genre: String
+}
+
+type Mutation {
+    # Управление артистами
+    createArtist(input: ArtistInput!): Artist
+    updateArtist(id: ID!, input: ArtistInput!): Artist
+    deleteArtist(id: ID!): ID
+
+    # Управление релизами
+    createRelease(input: ReleaseInput!): Release
+    patchRelease(id: ID!, input: PatchReleaseInput!): Release
+    deleteRelease(id: ID!): ID
+}
