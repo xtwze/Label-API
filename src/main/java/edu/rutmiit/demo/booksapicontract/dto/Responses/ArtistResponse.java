@@ -35,7 +35,7 @@ public class ArtistResponse extends RepresentationModel<ArtistResponse> {
     private final String telegramUserId;
 
     @Schema(description = "Никнейм артиста", example = "xtwze")
-    private final Integer nickname;
+    private final String nickname;
 
     @Schema(description = "Флаг готовности документов (пройдена ли проверка данных)", example = "true")
     private final Boolean isVerified;

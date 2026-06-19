@@ -31,6 +31,9 @@ public class ReleaseResponse extends RepresentationModel<ReleaseResponse> {
     @Schema(description = "Название релиза", example = "Night Drive")
     private final String title;
 
+    @Schema(description = "Уникальный штрих-код релиза (UPC-A, 12 цифр)", example = "123456789012")
+    private final String upc;
+
     @Schema(description = "Статус генерации договора", example = "CREATED",
             allowableValues = {"PENDING", "CREATED", "SIGNED", "ERROR"})
     private final String contractStatus;

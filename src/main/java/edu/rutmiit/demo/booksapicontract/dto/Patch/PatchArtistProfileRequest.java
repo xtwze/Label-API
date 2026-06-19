@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 
 /**
- * Запрос для частичного обновления книги (PATCH, семантика JSON Merge Patch).
+ * Запрос для частичного обновления профиля артиста (PATCH, семантика JSON Merge Patch).
  *
  * Передайте только те поля, которые нужно изменить.
  * Поля, отсутствующие в запросе, десериализуются как null — сервис их не трогает.
@@ -12,8 +12,6 @@ import jakarta.validation.constraints.*;
  * Ограничение: стандартный Jackson не различает «поле не пришло» и «пришло явно null».
  * В этом контракте оба случая означают «не менять». Для точного различения
  * можно использовать JsonNullable из библиотеки jackson-databind-nullable.
- *
- * Сменить автора через PATCH нельзя — для этого создайте новую книгу.
  */
 
 import java.time.LocalDate;

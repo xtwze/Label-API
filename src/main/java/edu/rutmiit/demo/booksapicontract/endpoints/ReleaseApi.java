@@ -1,6 +1,7 @@
 package edu.rutmiit.demo.booksapicontract.endpoints;
 
 import edu.rutmiit.demo.booksapicontract.config.LabelApiContractConfig;
+import edu.rutmiit.demo.booksapicontract.dto.Patch.PatchReleaseRequest;
 import edu.rutmiit.demo.booksapicontract.dto.Request.ReleaseRequest;
 import edu.rutmiit.demo.booksapicontract.dto.Responses.ReleaseResponse;
 import edu.rutmiit.demo.booksapicontract.dto.Responses.ErrorResponse;
@@ -18,7 +19,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 /**
  * Контракт API для управления музыкальными релизами.
@@ -29,6 +29,20 @@ import org.springframework.web.multipart.MultipartFile;
         produces = MediaType.APPLICATION_JSON_VALUE
 )
 public interface ReleaseApi {
+
+    @Operation(
+            summary = "Зарегистрировать новый релиз",
+            description = "Создает запись о релизе для последующей генерации договора. UPC должен быть уникальным.",
+            security = @SecurityRequirement(name = LabelApiContractConfig.SECURITY_SCHEME_BEARER)
+    )
+    @ApiResponse(responseCode = "201", description = "Релиз успешно создан")
+    @ApiResponse(responseCode = "400", description = "Ошибка валидации данных релиза (например, некорректный UPC)",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    @ApiResponse(responseCode = "409", description = "Релиз с таким UPC уже существует",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.CREATED)
+    ResponseEntity<EntityModel<ReleaseResponse>> createRelease(@Valid @RequestBody ReleaseRequest request);
 
     @Operation(
             summary = "Получить релиз по ID",
@@ -68,7 +82,7 @@ public interface ReleaseApi {
     @PatchMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     EntityModel<ReleaseResponse> patchRelease(
             @Parameter(description = "ID релиза", required = true) @PathVariable Long id,
-            @RequestBody ReleaseRequest request
+            @Valid @RequestBody PatchReleaseRequest request
     );
 
     @Operation(

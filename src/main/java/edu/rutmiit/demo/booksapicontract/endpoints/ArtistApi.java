@@ -1,11 +1,15 @@
 package edu.rutmiit.demo.booksapicontract.endpoints;
 
 import edu.rutmiit.demo.booksapicontract.config.LabelApiContractConfig;
+import edu.rutmiit.demo.booksapicontract.dto.Patch.PatchArtistProfileRequest;
 import edu.rutmiit.demo.booksapicontract.dto.Patch.PatchArtistRequest;
-import edu.rutmiit.demo.booksapicontract.dto.Request.ArtistRequest;
+import edu.rutmiit.demo.booksapicontract.dto.Update.CreateArtistRequest;
+import edu.rutmiit.demo.booksapicontract.dto.Update.UpdateArtistProfileRequest;
+import edu.rutmiit.demo.booksapicontract.dto.Update.UpdateArtistRequest;
+import edu.rutmiit.demo.booksapicontract.dto.Responses.ArtistProfileResponse;
 import edu.rutmiit.demo.booksapicontract.dto.Responses.ArtistResponse;
 import edu.rutmiit.demo.booksapicontract.dto.Responses.ErrorResponse;
-import edu.rutmiit.demo.booksapicontract.dto.Responses.ReleaseResponse; // Предполагаем наличие этого DTO
+import edu.rutmiit.demo.booksapicontract.dto.Responses.ReleaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -61,7 +65,7 @@ public interface ArtistApi {
 
     @Operation(
             summary = "Регистрация нового артиста",
-            description = "Создает базовую запись артиста. Персональные данные (паспорт) заполняются отдельно через ArtistProfile.",
+            description = "Создает базовую запись артиста. Персональные данные (паспорт) заполняются отдельно через профиль артиста.",
             security = @SecurityRequirement(name = LabelApiContractConfig.SECURITY_SCHEME_BEARER)
     )
     @ApiResponse(responseCode = "201", description = "Артист успешно создан")
@@ -69,11 +73,11 @@ public interface ArtistApi {
             content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    ResponseEntity<EntityModel<ArtistResponse>> createArtist(@Valid @RequestBody ArtistRequest request);
+    ResponseEntity<EntityModel<ArtistResponse>> createArtist(@Valid @RequestBody CreateArtistRequest request);
 
     @Operation(
             summary = "Полное обновление данных артиста (PUT)",
-            description = "Требует передачи всех обязательных полей ArtistRequest. Используется для полной перезаписи данных.",
+            description = "Требует передачи всех обязательных полей UpdateArtistRequest. Используется для полной перезаписи данных.",
             security = @SecurityRequirement(name = LabelApiContractConfig.SECURITY_SCHEME_BEARER)
     )
     @ApiResponse(responseCode = "200", description = "Данные успешно обновлены")
@@ -82,7 +86,7 @@ public interface ArtistApi {
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     EntityModel<ArtistResponse> updateArtist(
             @Parameter(description = "ID артиста", required = true, example = "1") @PathVariable Long id,
-            @Valid @RequestBody ArtistRequest request
+            @Valid @RequestBody UpdateArtistRequest request
     );
 
     @Operation(
@@ -122,5 +126,49 @@ public interface ArtistApi {
             @Parameter(description = "ID артиста", required = true, example = "1") @PathVariable Long id,
             @Parameter(description = "Номер страницы", example = "0") @RequestParam(defaultValue = "0") int page,
             @Parameter(description = "Размер страницы", example = "20") @RequestParam(defaultValue = "20") int size
+    );
+
+    @Operation(
+            summary = "Получить профиль артиста (паспортные данные)",
+            description = "Возвращает данные, необходимые для генерации договора: дата рождения, паспорт, ИНН, адрес. " +
+                    "Паспортный номер возвращается в замаскированном виде.",
+            security = @SecurityRequirement(name = LabelApiContractConfig.SECURITY_SCHEME_BEARER)
+    )
+    @ApiResponse(responseCode = "200", description = "Профиль найден")
+    @ApiResponse(responseCode = "404", description = "Артист или его профиль не найден",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    @GetMapping("/{id}/profile")
+    EntityModel<ArtistProfileResponse> getArtistProfile(
+            @Parameter(description = "ID артиста", required = true, example = "1") @PathVariable Long id
+    );
+
+    @Operation(
+            summary = "Полное обновление профиля артиста (PUT)",
+            description = "Требует передачи всех обязательных полей UpdateArtistProfileRequest для формирования договора.",
+            security = @SecurityRequirement(name = LabelApiContractConfig.SECURITY_SCHEME_BEARER)
+    )
+    @ApiResponse(responseCode = "200", description = "Профиль успешно обновлён")
+    @ApiResponse(responseCode = "400", description = "Ошибка валидации паспортных данных",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    @ApiResponse(responseCode = "404", description = "Артист не найден",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    @PutMapping(value = "/{id}/profile", consumes = MediaType.APPLICATION_JSON_VALUE)
+    EntityModel<ArtistProfileResponse> updateArtistProfile(
+            @Parameter(description = "ID артиста", required = true, example = "1") @PathVariable Long id,
+            @Valid @RequestBody UpdateArtistProfileRequest request
+    );
+
+    @Operation(
+            summary = "Частичное обновление профиля артиста (PATCH)",
+            description = "Позволяет изменить только отдельные паспортные поля, не затрагивая остальные.",
+            security = @SecurityRequirement(name = LabelApiContractConfig.SECURITY_SCHEME_BEARER)
+    )
+    @ApiResponse(responseCode = "200", description = "Поля профиля успешно обновлены")
+    @ApiResponse(responseCode = "404", description = "Артист не найден",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    @PatchMapping(value = "/{id}/profile", consumes = MediaType.APPLICATION_JSON_VALUE)
+    EntityModel<ArtistProfileResponse> patchArtistProfile(
+            @Parameter(description = "ID артиста", required = true, example = "1") @PathVariable Long id,
+            @Valid @RequestBody PatchArtistProfileRequest request
     );
 }

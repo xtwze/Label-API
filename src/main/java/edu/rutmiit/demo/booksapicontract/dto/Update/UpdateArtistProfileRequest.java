@@ -1,4 +1,4 @@
-package edu.rutmiit.demo.booksapicontract.dto.Responses;
+package edu.rutmiit.demo.booksapicontract.dto.Update;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;

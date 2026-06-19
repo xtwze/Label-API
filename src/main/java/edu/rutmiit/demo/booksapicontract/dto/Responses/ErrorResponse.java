@@ -45,7 +45,7 @@ public record ErrorResponse(
     @Schema(description = "Ошибка валидации поля")
     public record FieldError(
 
-            @Schema(description = "Имя поля из ReleaseRequest", example = "dateOfRealise")
+            @Schema(description = "Имя поля из ReleaseRequest", example = "dateOfRelease")
             String field,
 
             @Schema(description = "Значение, которое было отклонено", example = "вчера")

@@ -1,5 +1,6 @@
 package edu.rutmiit.demo.booksapicontract.dto.Request;
 
+import edu.rutmiit.demo.booksapicontract.validation.ValidUpc;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -12,11 +13,15 @@ public record ReleaseRequest(
         @Schema(description = "Название релиза", example = "Название релиза")
         @NotBlank String title,
 
+        @Schema(description = "Уникальный штрих-код релиза (UPC-A, 12 цифр)", example = "123456789012")
+        @ValidUpc
+        String upc,
+
         @Schema(description = "Является ли альбомом")
         boolean isAlbum,
 
         @Schema(description = "Дата релиза", example = "ДД.ММ.ГГГГ")
-        String dateOfRealise,
+        String dateOfRelease,
         @Schema(description = "Год создания(при переносе релиза)", example = "2005")
         String yearOfCreation,
 
